@@ -1,0 +1,3 @@
+docdir = $(datadir)/doc/@PACKAGE@
+doc_DATA = README LICENSE
+EXTRA_DIST = README LICENSE
