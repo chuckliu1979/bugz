@@ -237,7 +237,7 @@ static int bugz_glob_errfunc(const char *epath, int eerrno) {
 }
 
 static glob_t *bugz_glob_conf(void) {
-    int i, retval;
+    int i;
     int flags = GLOB_TILDE;
     glob_t *results;
     results = (glob_t *)malloc(sizeof(glob_t));
@@ -252,7 +252,7 @@ static glob_t *bugz_glob_conf(void) {
                              };
     for(i=0; i<sizeof(patterns)/sizeof(patterns[0]); i++) {
         flags |= (i > 0 ? GLOB_APPEND : 0);
-        retval = glob(patterns[i], flags, bugz_glob_errfunc, results);
+        glob(patterns[i], flags, bugz_glob_errfunc, results);
     }
     return results;
 }
