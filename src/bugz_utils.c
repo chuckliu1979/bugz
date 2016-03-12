@@ -1346,7 +1346,6 @@ int bugz_check_result(json_object *json) {
         int j;
         json_object *error;
         j=json_object_object_get_ex(json, "error", &error);
-        json_object_put(error);
         if (j) {
             json_object *code, *message;
             json_object_object_get_ex(json, "code", &code);
