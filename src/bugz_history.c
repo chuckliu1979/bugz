@@ -15,8 +15,7 @@
 #include "bugz.h"
 
 static struct option bugz_history_options[] = {
-    {"help",      no_argument,       0, 'h'},
-    {"new-since", required_argument, 0, 'n'},
+    {"help", no_argument, 0, 'h'},
     { 0 }
 };
 
@@ -30,7 +29,6 @@ void bugz_history_helper(int status) {
        "\n"
        "Valid options:\n"
        "-h [--help]           : show this help message and exit\n"
-       "-n [--new-since]      : only changes newer than this time\n"
        "\n"
        "Type 'bugz --help' for valid global options\n");
     fprintf(stderr, "%s", help_header);
@@ -39,7 +37,6 @@ void bugz_history_helper(int status) {
 
 struct bugz_history_arguments_t {
     int bug;
-    struct curl_slist *new_since;
 };
 static struct bugz_history_arguments_t bugz_history_arguments = { 0 };
 #define _append_history_arg_(m) bugz_history_arguments.m = \
@@ -57,7 +54,7 @@ int bugz_history_main(int argc, char **argv) {
     optind++;
     bugz_history_arguments.bug = -1;
     while (optind < argc) {
-        opt = getopt_long(argc, argv, "-:hn:", bugz_history_options, &longindex);
+        opt = getopt_long(argc, argv, "-:h", bugz_history_options, &longindex);
         switch (opt) {
         case ':' :
         case '?' :
@@ -67,9 +64,6 @@ int bugz_history_main(int argc, char **argv) {
                             argv[0], argv[optind - 1]);
         case 'h' :
             bugz_history_helper(opt == 'h' ? 0 : 1);
-        case 'n' :
-            _append_history_arg_(new_since);
-            break;
         case -1 :
             bugz_history_arguments.bug = atoi(argv[optind++]);
             break;
