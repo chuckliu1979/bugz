@@ -5,6 +5,7 @@ Version:        1.0.0
 Release:        0.1%{?dist}
 License:        GPL-2
 BuildRoot:      %{_tmppath}/%{name}-%{version}-%{release}-build
+URL:            https://github.com/chuckliu1979/bugz
 Source:         bugz-%{version}.tar.gz
 
 #
@@ -52,5 +53,5 @@ rm -rf %{buildroot}
 
 %changelog
 * Thu Mar 10 2016 Chuck Liu <19246678@qq.com> - 1.0.0-0.1
-- initial create package
+- Initial packaging
 
