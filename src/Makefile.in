@@ -50,7 +50,8 @@ PROGRAMS = $(bin_PROGRAMS)
 am_bugz_OBJECTS = bugz.$(OBJEXT) bugz_auth.$(OBJEXT) \
 	bugz_utils.$(OBJEXT) bugz_search.$(OBJEXT) \
 	bugz_modify.$(OBJEXT) bugz_post.$(OBJEXT) \
-	bugz_attach.$(OBJEXT) bugz_get.$(OBJEXT)
+	bugz_attach.$(OBJEXT) bugz_history.$(OBJEXT) \
+	bugz_get.$(OBJEXT)
 bugz_OBJECTS = $(am_bugz_OBJECTS)
 bugz_LDADD = $(LDADD)
 DEFAULT_INCLUDES = -I.@am__isrc@
@@ -166,6 +167,7 @@ bugz_SOURCES = bugz.h \
                bugz_modify.c \
                bugz_post.c \
                bugz_attach.c \
+               bugz_history.c \
                bugz_get.c
 
 all: config.h
@@ -271,6 +273,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/bugz_attach.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/bugz_auth.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/bugz_get.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/bugz_history.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/bugz_modify.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/bugz_post.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/bugz_search.Po@am__quote@
