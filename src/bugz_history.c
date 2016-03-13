@@ -137,8 +137,8 @@ int bugz_history_main(int argc, char **argv) {
                     json_object_object_get_ex(item, "when", &when);
                     json_object_object_get_ex(item, "changes", &changes);
                     fprintf(stdout, "[History #%d] %s : %s\n", i,
-                            json_object_get_string(who),
-                            json_object_get_string(when));
+                            json_object_get_string(when),
+                            json_object_get_string(who));
                     for (k=0; k<bugz_arguments.columns; k++) fprintf(stdout, "%c", '-');
                     fprintf(stdout, "\n");
 
