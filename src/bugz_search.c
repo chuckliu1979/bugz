@@ -442,7 +442,7 @@ int bugz_search_main(int argc, char **argv) {
             bugz_slist_to_json_array(bugz_search_arguments.status, json_type_string));
     }
     if (bugz_search_arguments.terms) {
-        int i, j=0;
+        int i;
         char *q, *p = NULL;
         struct curl_slist *head = bugz_search_arguments.terms;
         while (head) {
@@ -453,7 +453,6 @@ int bugz_search_main(int argc, char **argv) {
                 p[i] = '\0';
             }
             else {
-                j = 1;
                 q = (char *)malloc(i+strlen(p)+2);
                 memcpy(q, p, strlen(p));
                 q[strlen(p)] = '\x20';
@@ -477,7 +476,7 @@ int bugz_search_main(int argc, char **argv) {
             json_object_new_string("advanced"));
             json_object_object_add(json, "longdesc",
             json_object_new_string(q));
-            if (j) { /* get every bug because of the space, so set limit = 1 for safe*/
+            if (strchr(q, '\x20')) { /* get every bug because of the space, so set limit = 1 for safe*/
                 json_object *limit = json_object_new_int(1);
                 json_object_object_add(json, "limit", limit);
             }
