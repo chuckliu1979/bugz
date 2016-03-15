@@ -705,7 +705,7 @@ int bugz_modify_main(int argc, char **argv) {
                 json_object_object_foreach(changes,key,val) {
                     json_object_object_get_ex(val, "added", &added);
                     json_object_object_get_ex(val, "removed", &removed);
-                    fprintf(stderr, " * Info: %-12s: added %s\n",  key, json_object_get_string(added));
+                    fprintf(stderr, " * Info: %-12s: added   %s\n", key, json_object_get_string(added));
                     fprintf(stderr, " * Info: %-12s: removed %s\n",key, json_object_get_string(removed));
                 }
             }

@@ -109,6 +109,7 @@ int bugz_history_main(int argc, char **argv) {
     headers = curl_slist_append(headers, "charsets: utf-8");
     headers = curl_slist_append(headers, "Accept: application/json");
     headers = curl_slist_append(headers, "Content-Type: application/json");
+    curl_easy_setopt(curl, CURLOPT_HTTPHEADER, headers);
     
     fprintf(stderr, N_(" * Info: Using %s\n")
                     N_(" * Info: Getting bug %d history ..\n"), base, bugz_history_arguments.bug);

@@ -530,6 +530,7 @@ int bugz_search_main(int argc, char **argv) {
     headers = curl_slist_append(headers, "charsets: utf-8");
     headers = curl_slist_append(headers, "Accept: application/json");
     headers = curl_slist_append(headers, "Content-Type: application/json");
+    curl_easy_setopt(curl, CURLOPT_HTTPHEADER, headers);
 
     bugz_get_result(curl, url, &json);
     if (bugz_check_result(json)) {
