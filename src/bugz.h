@@ -111,6 +111,7 @@ struct bugz_parsed_url_t {
     struct curl_slist *hostname; /* Host name (lower case) */
     struct curl_slist *port;     /* Port number as integer, if present */
 };
+char *bugz_urlencode(json_object *json);
 char *bugz_urlunparse(struct bugz_parsed_url_t *purl);
 struct bugz_parsed_url_t *bugz_urlparse(const char *url);
 void bugz_parsed_url_free(struct bugz_parsed_url_t *purl);

@@ -168,120 +168,6 @@ static void bugz_search_list_bugs(json_object *bugs) {
     }
 }
 
-static const char *quote(const char *s, int l) {
-    static char p[8192];
-    /*static char reserved[] = ";:,=+@&$/\?";*/
-    static char always_safe[] = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
-                                "abcdefghijklmnopqrstuvwxyz"
-                                "0123456789_.-";
-    int i;
-    char *q;
-    p[0] = 0;
-    if (l > strlen(s))
-        l = strlen(s);
-    for (i=0; i<l; i++) {
-        if ((q = strchr(always_safe, s[i])) != NULL)
-            sprintf(p+strlen(p), "%c", s[i]);
-        else
-            sprintf(p+strlen(p), "%%%02X", s[i]);
-    }
-    return p;
-}
-
-static const char *quote_plus(const char *s) {
-    char *q, *t;
-    static char p[8192];
-
-    if ((q = strchr(s, '\x20')) == NULL)
-        sprintf(p, "%s", quote(s, strlen(s)));
-    else {
-        sprintf(p, "%s+", quote(s, q-s));
-        while ((t = strchr(++q, '\x20')) != NULL) {
-            if (t==q)
-                sprintf(p+strlen(p), "+");
-            else
-                sprintf(p+strlen(p), "%s+", quote(q, t-q));
-            q = t;
-        }
-        sprintf(p+strlen(p), "%s", quote(q, strlen(q)));
-    }
-    
-    return p;
-}
-
-static char *bugz_search_urlencode(json_object *json) {
-    int i, j=0, c=0;
-    char *q, p[8192];
-    json_object *ele;
-    struct curl_slist *params = NULL;
-    json_object_object_foreach(json,key,val) {
-        if (strcmp(key, "login") == 0 ||
-            strcmp(key, "password") == 0 ||
-            strcmp(key, "api_key") == 0) {
-            c++;
-            sprintf(p, "%s=%s", key, json_object_get_string(val));
-            j += strlen(p);
-            params = curl_slist_append(params, p);
-            continue;
-        }
-        switch (json_object_get_type(val)) {
-        case json_type_int :
-        case json_type_double :
-        case json_type_boolean :
-        case json_type_string :
-            c++;
-            sprintf(p, "%s=", quote_plus(key));
-            sprintf(p+strlen(p), "%s", quote_plus(json_object_get_string(val)));
-            j += strlen(p);
-            params = curl_slist_append(params, p);
-            break;
-        case json_type_array :
-            for(i=0; i<json_object_array_length(val); i++) {
-                ele = json_object_array_get_idx(val, i);
-                switch (json_object_get_type(ele)) {
-                case json_type_int :
-                case json_type_double :
-                case json_type_boolean :
-                case json_type_string :
-                    c++;
-                    sprintf(p, "%s=", quote_plus(key));
-                    sprintf(p+strlen(p), "%s", quote_plus(json_object_get_string(ele)));
-                    j += strlen(p);
-                    params = curl_slist_append(params, p);
-                    break;
-                default :
-                    break;
-                }
-            }
-            break;
-        default :
-            break;
-        }
-    }
-    q = NULL;
-    if (params) {
-        struct curl_slist *head = params;
-        q = (char *)malloc(j+c);
-        if (q) {
-            c--;
-            memset(q, 0, j+c);
-            sprintf(q, "%s", head->data);
-            i = strlen(head->data);
-            head = head->next;
-        }
-        else
-            head = NULL;
-        while (c && head) {
-            sprintf(q+i, "&%s", head->data);
-            c--;
-            i += 1 + strlen(head->data);
-            head = head->next;
-        }
-        curl_slist_free_all(params);
-    }
-    return q;
-}
-
 int bugz_search_main(int argc, char **argv) {
     CURL *curl;
     json_object *json;
@@ -509,7 +395,7 @@ int bugz_search_main(int argc, char **argv) {
         json_object_new_string(username));
     }
 
-    if ((url = bugz_search_urlencode(json)) != NULL) {
+    if ((url = bugz_urlencode(json)) != NULL) {
         int i = strlen(base) + strlen("/rest/bug?") + strlen(url);
         char *p = (char *)malloc(i+1);
         memset(p, 0, i+1);
