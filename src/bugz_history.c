@@ -15,7 +15,8 @@
 #include "bugz.h"
 
 static struct option bugz_history_options[] = {
-    {"help", no_argument, 0, 'h'},
+    {"help",      no_argument,       0, 'h'},
+    {"new-since", required_argument, 0, 'n'},
     { 0 }
 };
 
@@ -29,6 +30,7 @@ void bugz_history_helper(int status) {
        "\n"
        "Valid options:\n"
        "-h [--help]           : show this help message and exit\n"
+       "-n [--new-since]      : only changes newer than this time\n"
        "\n"
        "Type 'bugz --help' for valid global options\n");
     fprintf(stderr, "%s", help_header);
@@ -37,6 +39,7 @@ void bugz_history_helper(int status) {
 
 struct bugz_history_arguments_t {
     int bug;
+    struct curl_slist *new_since;
 };
 static struct bugz_history_arguments_t bugz_history_arguments = { 0 };
 #define _append_history_arg_(m) bugz_history_arguments.m = \
@@ -45,8 +48,7 @@ static struct bugz_history_arguments_t bugz_history_arguments = { 0 };
 int bugz_history_main(int argc, char **argv) {
     CURL *curl;
     json_object *json;
-    char url[PATH_MAX] = {0};
-    char *base, *username, *password;
+    char *url, *base, *username, *password;
     int opt, longindex, retval = 1;
     struct bugz_config_t *config;
     struct curl_slist *headers = NULL;
@@ -54,7 +56,7 @@ int bugz_history_main(int argc, char **argv) {
     optind++;
     bugz_history_arguments.bug = -1;
     while (optind < argc) {
-        opt = getopt_long(argc, argv, "-:h", bugz_history_options, &longindex);
+        opt = getopt_long(argc, argv, "-:hn:", bugz_history_options, &longindex);
         switch (opt) {
         case ':' :
         case '?' :
@@ -64,6 +66,9 @@ int bugz_history_main(int argc, char **argv) {
                             argv[0], argv[optind - 1]);
         case 'h' :
             bugz_history_helper(opt == 'h' ? 0 : 1);
+        case 'n' :
+            _append_history_arg_(new_since);
+            break;  
         case -1 :
             bugz_history_arguments.bug = atoi(argv[optind++]);
             break;
@@ -92,16 +97,42 @@ int bugz_history_main(int argc, char **argv) {
             exit(1);
         }
     }
-    if (password)
-        sprintf(url, "%s/rest/bug/%d/history?login=%s&password=%s", base,
-                bugz_history_arguments.bug, username, password);
-    else if (username)
-        sprintf(url, "%s/rest/bug/%d/history?api_key=%s", base,
-                bugz_history_arguments.bug, username);
-    else
-        sprintf(url, "%s/rest/bug/%d/history", base, bugz_history_arguments.bug);
-
     bugz_config_free(config);
+    
+    json = json_object_new_object();
+    if (bugz_history_arguments.new_since)
+        json_object_object_add(json, "new_since",
+        bugz_slist_to_json_string(bugz_history_arguments.new_since));
+    if (password) {
+        json_object_object_add(json, "login",
+        json_object_new_string(username));
+        json_object_object_add(json, "password",
+        json_object_new_string(password));
+    }
+    else if (username) {
+        json_object_object_add(json, "api_key",
+        json_object_new_string(username));
+    }
+    
+    if (json_object_object_length(json) <= 0) {
+        int i = strlen(base) + strlen("/rest/bug/history");
+        url = (char *)malloc(i+32+1);
+        memset(url, 0, i+32+1);
+        sprintf(url, "%s/rest/bug/%d/history", base, bugz_history_arguments.bug);
+    }
+    else if ((url = bugz_urlencode(json)) != NULL) {
+        int i = strlen(base) + strlen("/rest/bug/history?") + strlen(url);
+        char *p = (char *)malloc(i+32+1);
+        memset(p, 0, i+32+1);
+        sprintf(p, "%s/rest/bug/%d/history?%s", base, bugz_history_arguments.bug, url);
+        url = p;
+    }
+    if (url == NULL) {
+        fprintf(stderr, N_("ERROR: %s history: urlencode failed\n"), argv[0]);
+        exit(1);
+    }
+      
+    json_object_put(json);  
     if ((curl = curl_easy_init()) == NULL) {
         fprintf(stderr, N_("ERROR: %s history: curl_easy_init() failed\n"), argv[0]);
         exit(1);
@@ -155,6 +186,7 @@ int bugz_history_main(int argc, char **argv) {
         json_object_put(json);
         retval = 0;
     }
+    free(url);
     curl_easy_cleanup(curl);
 
     return retval;
