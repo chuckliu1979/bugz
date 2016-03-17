@@ -597,18 +597,15 @@ int bugz_post_main(int argc, char **argv) {
             fprintf(stdout, "%-12s: %s\n", "Assigned to", json_object_get_string(val));
         }
         if (bugz_post_arguments.cc) {
-            char *q, *p, buf[1024] = { 0 };
+            char *q, *p;
             struct curl_slist *last = bugz_slist_get_last(bugz_post_arguments.cc);
             val = json_object_new_array();
             p = last->data;
-            while ((q = strchr(p, ',')) != NULL){
-                memcpy(buf, p, q - p);
-                buf[q-p+1] = 0;
-                json_object_array_add(val, json_object_new_string(buf));
-                p = q + 1;
+            q = strtok(p, ",");
+            while (q != NULL){
+                json_object_array_add(val, json_object_new_string(q));
+                q = strtok(NULL, ",");
             }
-            if (strlen(p))
-                json_object_array_add(val, json_object_new_string(p));
             json_object_object_add(json, "cc", val);
             fprintf(stdout, "%-12s: %s\n", "CC", json_object_get_string(val));
         }

@@ -284,10 +284,32 @@ int bugz_modify_main(int argc, char **argv) {
                 _append_modify_arg_(remove_dependson);
                 break;
             case opt_modify_add_cc :
-                _append_modify_arg_(add_cc);
+                if (1) {
+                    char *token, *str;
+                    str = (char *)malloc(strlen(optarg)+1);
+                    strcpy(str, optarg);
+                    token = strtok(str, ",");
+                    while (token != NULL) {
+                        bugz_modify_arguments.add_cc = \
+                        curl_slist_append(bugz_modify_arguments.add_cc, token);
+                        token = strtok(NULL, ",");
+                    }
+                    free(str);
+                }
                 break;
             case opt_modify_remove_cc :
-                _append_modify_arg_(remove_cc);
+                if (1) {
+                    char *token, *str;
+                    str = (char *)malloc(strlen(optarg)+1);
+                    strcpy(str, optarg);
+                    token = strtok(str, ",");
+                    while (token != NULL) {
+                        bugz_modify_arguments.remove_cc = \
+                        curl_slist_append(bugz_modify_arguments.remove_cc, token);
+                        token = strtok(NULL, ",");
+                    }
+                    free(str);
+                }
                 break;
             case opt_modify_component :
                 _append_modify_arg_(component);
