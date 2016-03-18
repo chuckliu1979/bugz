@@ -601,9 +601,16 @@ int bugz_post_main(int argc, char **argv) {
             struct curl_slist *last = bugz_slist_get_last(bugz_post_arguments.cc);
             val = json_object_new_array();
             p = last->data;
+            q = p;
+            while (*q) {
+                if (isspace((unsigned char)(*q)))
+                    *q = ',';
+                q++;
+            }
             q = strtok(p, ",");
             while (q != NULL){
-                json_object_array_add(val, json_object_new_string(q));
+                if (strlen(q) > 0)
+                    json_object_array_add(val, json_object_new_string(q));
                 q = strtok(NULL, ",");
             }
             json_object_object_add(json, "cc", val);

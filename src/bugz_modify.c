@@ -288,10 +288,17 @@ int bugz_modify_main(int argc, char **argv) {
                     char *token, *str;
                     str = (char *)malloc(strlen(optarg)+1);
                     strcpy(str, optarg);
+                    token = str;
+                    while (*token) {
+                        if (isspace((unsigned char)(*token)))
+                            *token = ',';
+                        token++;
+                    }
                     token = strtok(str, ",");
                     while (token != NULL) {
-                        bugz_modify_arguments.add_cc = \
-                        curl_slist_append(bugz_modify_arguments.add_cc, token);
+                        if (strlen(token) > 0)
+                            bugz_modify_arguments.add_cc = \
+                            curl_slist_append(bugz_modify_arguments.add_cc, token);
                         token = strtok(NULL, ",");
                     }
                     free(str);
@@ -302,10 +309,17 @@ int bugz_modify_main(int argc, char **argv) {
                     char *token, *str;
                     str = (char *)malloc(strlen(optarg)+1);
                     strcpy(str, optarg);
+                    token = str;
+                    while (*token) {
+                        if (isspace((unsigned char)(*token)))
+                            *token = ',';
+                        token++;
+                    }                    
                     token = strtok(str, ",");
                     while (token != NULL) {
-                        bugz_modify_arguments.remove_cc = \
-                        curl_slist_append(bugz_modify_arguments.remove_cc, token);
+                        if (strlen(token) > 0)
+                            bugz_modify_arguments.remove_cc = \
+                            curl_slist_append(bugz_modify_arguments.remove_cc, token);
                         token = strtok(NULL, ",");
                     }
                     free(str);
