@@ -20,6 +20,7 @@ _subcommand_macro_(modify, "Modify a bug (e.g. post a comment)")
 _subcommand_macro_(attach,     "Attach the file to a bug")
 _subcommand_macro_(attachment, "Get attachment from Bugzilla")
 _subcommand_macro_(history,    "Get the history for a specific bug")
+_subcommand_macro_(component,  "Create new component for a specific product")
 
 _subcommand_macro_(connections, "List known bug trackers")
 

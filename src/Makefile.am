@@ -13,5 +13,6 @@ bugz_SOURCES = bugz.h \
                bugz_post.c \
                bugz_attach.c \
                bugz_history.c \
+               bugz_component.c \
                bugz_get.c
 
