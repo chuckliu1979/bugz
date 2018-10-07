@@ -18,6 +18,7 @@ static struct option bugz_search_options[] = {
     {"help",             no_argument,       0, 'h'},
     {"alias",            required_argument, 0,  0 },
     {"assigned-to",      required_argument, 0, 'a'},
+    {"cc",               required_argument, 0,  0 },
     {"component",        required_argument, 0, 'C'},
     {"creator",          required_argument, 0, 'r'},
     {"limit",            required_argument, 0, 'l'},
@@ -44,6 +45,7 @@ typedef enum bugz_search_longopt_t {
     opt_search_help = 0,
     opt_search_alias,
     opt_search_assigned_to,
+    opt_search_cc,
     opt_search_component,
     opt_search_creator,
     opt_search_limit,
@@ -78,6 +80,7 @@ void bugz_search_helper(int status) {
        "-h [--help]                : show this help message and exit\n"
        "--alias ALIAS              : the unique alias for this bug\n"
        "-a [--assigned-to] ARG     : email the bug is assigned to\n"
+       "--cc ARG                   : email in the CC list for the bug\n"
        "-C [--component] COMPONENT : restrict by component (one or more)\n"
        "-r [--creator] CREATOR     : email of the persion who created the bug\n"
        "-l [--limit] LIMIT         : limit the number of records returned in a\n"
@@ -108,6 +111,7 @@ struct bugz_search_arguments_t {
     struct curl_slist *terms;
     struct curl_slist *alias;
     struct curl_slist *assigned_to;
+    struct curl_slist *cc;
     struct curl_slist *component;
     struct curl_slist *creator;
     struct curl_slist *op_sys;
@@ -220,6 +224,9 @@ int bugz_search_main(int argc, char **argv) {
             break;
         case 0 :
             switch (longindex) {
+            case opt_search_cc :
+                _append_search_arg_(cc);
+                break;
             case opt_search_alias :
                 _append_search_arg_(alias);
                 break;
@@ -294,6 +301,7 @@ int bugz_search_main(int argc, char **argv) {
                                 bugz_slist_to_json_array(bugz_search_arguments.n, json_type_string));
     _add_string_(alias)
     _add_string_(assigned_to)
+    _add_string_(cc)
     _add_array_(component)
     _add_string_(creator)
     _add_array_(op_sys)
