@@ -13,14 +13,14 @@ Requires: file
 Requires: json-c >= 0.11
 BuildRequires: json-c-devel >= 0.11
 
-%if 0%{?rhel} < 6 || 0%{?oraclelinux} < 6
-Requires: curl
-BuildRequires: file
-BuildRequires: curl-devel
-%else
+%if 0%{?rhel} >= 6 || 0%{?oraclelinux} >= 6 || 0%{?fedora} >= 12
 Requires: libcurl
 BuildRequires: file-devel
 BuildRequires: libcurl-devel
+%else
+Requires: curl
+BuildRequires: file
+BuildRequires: curl-devel
 %endif
 
 %description
@@ -52,6 +52,9 @@ rm -rf %{buildroot}
 %{_bindir}/*
 
 %changelog
+* Sun Oct 06 2018 Chuck Liu <19246678@qq.com> - 1.0.0-0.2
+- add support for searching for addresses in CC field
+
 * Thu Mar 10 2016 Chuck Liu <19246678@qq.com> - 1.0.0-0.1
 - Initial packaging
 
